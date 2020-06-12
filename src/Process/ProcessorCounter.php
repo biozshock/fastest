@@ -2,6 +2,7 @@
 
 namespace Liuggio\Fastest\Process;
 
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Process\Process;
 
 /**
@@ -50,18 +51,8 @@ class ProcessorCounter
                 }
             }
         } elseif ('\\' === DIRECTORY_SEPARATOR) {
-            $command = [
-                'for',
-                '/F',
-                '"tokens=2 delims=="',
-                '%C',
-                'in',
-                "('wmic cpu get NumberOfLogicalProcessors /value ^| findstr NumberOfLogicalProcessors')",
-                'do',
-                '@echo',
-                '%C'
-            ];
-            $process = new Process($command);
+            $command = new StringInput('for /F "tokens=2 delims==" %C in (\'wmic cpu get NumberOfLogicalProcessors /value ^| findstr NumberOfLogicalProcessors\') do @echo %C');
+            $process = new Process($command->getArguments());
             $process->run();
 
             if ($process->isSuccessful() && ($numProc = (int) ($process->getOutput())) > 0) {

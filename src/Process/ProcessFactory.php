@@ -2,6 +2,7 @@
 
 namespace Liuggio\Fastest\Process;
 
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Process\Process;
 
 class ProcessFactory
@@ -47,9 +48,9 @@ class ProcessFactory
         $commandToExecute = str_replace('{p}', $processNumber, $commandToExecute);
         $commandToExecute = str_replace('{n}', $currentProcessCounter, $commandToExecute);
 
-        preg_match_all('#(?<!\\\\)("|\')(?:[^\\\\]|\\\\.)*?\1|\S+#s', $commandToExecute, $parsedCommand);
+        $stringInput = new StringInput($commandToExecute);
 
-        return $parsedCommand[0];
+        return $stringInput->getArguments();
     }
 
     private function createProcess($executeCommand, $arrayEnv)
